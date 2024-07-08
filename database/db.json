@@ -25,12 +25,8 @@
       "name": "javad",
       "specialization": "Front-End",
       "email": "javad@mail.com",
-      "like": 3,
+      "like": 4,
       "comments": [
-        {
-          "id": 1,
-          "text": "comment test 1"
-        },
         {
           "id": 2,
           "text": "comment test 2"
@@ -38,6 +34,10 @@
         {
           "id": 3,
           "text": "comment test 3"
+        },
+        {
+          "id": 4,
+          "text": "comment test 4 for javad"
         }
       ]
     },
@@ -46,7 +46,7 @@
       "name": "fatemeh",
       "specialization": "SEO Expert",
       "email": "fatemeh@mail.com",
-      "like": 2,
+      "like": 8,
       "comments": [
         {
           "id": 1,
@@ -55,19 +55,23 @@
         {
           "id": 2,
           "text": "comment test 2 for user 2"
+        },
+        {
+          "id": 3,
+          "text": "comment test 3 for fatemeh "
         }
       ]
     },
     {
-      "id": "95657d31-02a2-4e5e-806f-4fab74e15f8f",
-      "name": "sara",
+      "id": "6a4c8628-b386-49fa-af60-a1db86d23883",
+      "name": "ali",
       "specialization": "back-end developer",
-      "email": "sara@mail.com",
+      "email": "ali@mail.com",
       "like": 1,
       "comments": [
         {
           "id": 1,
-          "text": "comment test 1 for sara"
+          "text": "comment tesst 1 for ali"
         }
       ]
     }

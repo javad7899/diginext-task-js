@@ -70,9 +70,6 @@ const ProfileContainer = ({ profilesData, setProfilesData, error }) => {
       .catch(error => console.error("Error deleting comment:", error));
   };
 
-
-
-
   const sortProfiles = (profiles, ascending) => {
     return profiles.sort((a, b) => {
       const profileA = a.like;
@@ -115,14 +112,14 @@ const ProfileContainer = ({ profilesData, setProfilesData, error }) => {
       </div>
 
       {sortedAndFilteredProfiles.length > 0 ? (
-        sortedAndFilteredProfiles.map((item, index) => (
+        sortedAndFilteredProfiles.map((item) => (
           <ProfileCard
-            key={index}
+            key={item.id}
             {...item}
             userId={item.id}
             onAddComment={(newComment) => handleAddComment(item.id, newComment)}
-            onIncreaseLike={() => handleLikeClick(setProfilesData, index, 1)}
-            onDecreaseLike={() => handleLikeClick(setProfilesData, index, -1)}
+            onIncreaseLike={() => handleLikeClick(setProfilesData, item.id, 1)}
+            onDecreaseLike={() => handleLikeClick(setProfilesData, item.id, -1)}
             onDelete={() => handleDeleteProfile(item.id)}
             onDeleteComment={(commentId) => handleDeleteComment(item.id, commentId)}
           />
