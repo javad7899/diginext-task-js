@@ -7,7 +7,6 @@ import { handleLikeClick } from "../utils/handleLikeClick";
 const ProfileContainer = ({ profilesData, setProfilesData, error }) => {
   const [isAscending, setIsAscending] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  // const [updatedComments, setUpdatedComments] = useState()
 
   const handleAddComment = (userId, newComment) => {
     const updatedProfiles = profilesData.map((profile) => {
@@ -23,36 +22,9 @@ const ProfileContainer = ({ profilesData, setProfilesData, error }) => {
     setProfilesData(updatedProfiles);
   };
 
-  const sortProfiles = (profiles, ascending) => {
-    return profiles.sort((a, b) => {
-      const profileA = a.like;
-      const profileB = b.like;
-
-      if (profileA < profileB) return ascending ? -1 : 1;
-      if (profileA > profileB) return ascending ? 1 : -1;
-      return 0;
-    });
-  };
-
-  const filteredProfiles = profilesData.filter((profile) => {
-    return searchValue.toLowerCase() === ""
-      ? profile
-      : profile.name.toLowerCase().includes(searchValue.toLowerCase())
-  });
-
-  const sortedAndFilteredProfiles = sortProfiles(filteredProfiles, isAscending);
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-
   const handleDeleteProfile = (id) => {
     fetch(`http://localhost:4000/profile-data/${id}`, {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
     })
       .then(res => {
         if (res.ok) {
@@ -65,53 +37,64 @@ const ProfileContainer = ({ profilesData, setProfilesData, error }) => {
       .catch(error => console.error('Error deleting data:', error));
   };
 
-
-  const handleDeleteComment = async (userId, commentId) => {
-    // Ensure profilesData is not undefined and comments is an array
-    if (!profilesData || !profilesData.comments || !Array.isArray(profilesData.comments)) {
-      console.error('Error: profilesData.comments is not properly initialized or not an array');
-      return;
-    }
-    const allComments = profilesData.map(item => item.comments)
-    // Filter out the comment to be deleted
-    const updatedComments = allComments.filter(comment => comment.id !== commentId);
-
-    // Update the local state immediately for better user experience
-    setProfilesData(prevProfilesData => ({
-      ...prevProfilesData,
-      comments: updatedComments
-    }));
-
-    // Update the server data using fetch
-    try {
-      const response = await fetch(`http://localhost:4000/profile-data/${userId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ ...profilesData, comments: updatedComments })
-      });
-
-      if (!response.ok) {
-        console.error("Failed to delete comment on server");
-        // Rollback the local state if update fails
-        setProfilesData(prevProfilesData => ({
-          ...prevProfilesData,
-          comments: allComments // Restore the comments array if necessary
-        }));
+  const handleDeleteComment = (userId, commentId) => {
+    const updatedProfiles = profilesData.map(profile => {
+      if (profile.id === userId) {
+        const updatedComments = profile.comments.filter(comment => comment.id !== commentId);
+        return { ...profile, comments: updatedComments };
       }
-    } catch (error) {
-      console.error("Error occurred while deleting comment:", error);
-      // // Rollback the local state on fetch error
-      // setProfilesData(prevProfilesData => ({
-      //   ...prevProfilesData,
-      //   comments: profilesData.comments // Restore the comments array if necessary
-      // }));
-    }
+      return profile;
+    });
+
+    setProfilesData(updatedProfiles);
+
+    const profileToUpdate = updatedProfiles.find(profile => profile.id === userId);
+    const payload = {
+      ...profileToUpdate,
+      comments: profileToUpdate.comments
+    };
+
+    fetch(`http://localhost:4000/profile-data/${userId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+      .then(response => {
+        if (!response.ok) {
+          console.error("Failed to delete comment on server");
+          setProfilesData(prevProfilesData => [...prevProfilesData]);
+        }
+      })
+      .catch(error => console.error("Error deleting comment:", error));
   };
 
 
 
+
+  const sortProfiles = (profiles, ascending) => {
+    return profiles.sort((a, b) => {
+      const profileA = a.like;
+      const profileB = b.like;
+
+      if (profileA < profileB) return ascending ? -1 : 1;
+      if (profileA > profileB) return ascending ? 1 : -1;
+      return 0;
+    });
+  };
+
+  const filteredProfiles = profilesData.filter(profile => {
+    return searchValue.toLowerCase() === ""
+      ? profile
+      : profile.name.toLowerCase().includes(searchValue.toLowerCase());
+  });
+
+  const sortedAndFilteredProfiles = sortProfiles(filteredProfiles, isAscending);
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="flex flex-col gap-8 w-full border border-gray-200 items-center justify-center py-8">
@@ -145,7 +128,7 @@ const ProfileContainer = ({ profilesData, setProfilesData, error }) => {
           />
         ))
       ) : (
-        <h2 className="text-xl">There is no profile</h2>
+        <h2 className="text-xl">There are no profiles to display.</h2>
       )}
     </div>
   );
