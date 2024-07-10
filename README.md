@@ -1,3 +1,7 @@
+## For Install Dependencies
+
+`pnpm install`
+
 ## Run Develope Mode Client Side
 
 `pnpm dev`
